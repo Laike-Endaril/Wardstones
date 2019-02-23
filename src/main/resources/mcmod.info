@@ -1,0 +1,16 @@
+[
+{
+  "modid": "wardstones",
+  "name": "Wardstones",
+  "description": "A different take on the idea of Waystones; based on BlayTheNinth's Waystones mod",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Laike_Endaril"],
+  "credits": "BlayTheNinth - Original Waystones mod",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
