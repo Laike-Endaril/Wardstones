@@ -1,5 +1,6 @@
 package com.fantasticsource.wardstones.block;
 
+import com.fantasticsource.wardstones.BlocksAndItems;
 import com.fantasticsource.wardstones.Wardstones;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -20,6 +21,7 @@ public class BlockWardstoneBase extends Block
         setUnlocalizedName(Wardstones.MODID + ":wardstone");
         setSoundType(SoundType.STONE);
         disableStats();
+        setCreativeTab(BlocksAndItems.creativeTab);
 
         if (this.getClass() == BlockWardstoneBase.class) setRegistryName("wardstonebase");
     }

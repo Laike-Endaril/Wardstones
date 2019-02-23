@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
@@ -34,6 +35,12 @@ public class BlocksAndItems
         public ItemStack getTabIconItem()
         {
             return new ItemStack(blockWardstone);
+        }
+
+        @Override
+        public void displayAllRelevantItems(NonNullList<ItemStack> p_78018_1_)
+        {
+            super.displayAllRelevantItems(p_78018_1_);
         }
     };
 

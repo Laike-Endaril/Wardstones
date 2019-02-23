@@ -12,6 +12,5 @@ public class ItemWardstone extends ItemBlock
 
         setUnlocalizedName(Wardstones.MODID + ":wardstone");
         setRegistryName("wardstone");
-        setCreativeTab(BlocksAndItems.creativeTab);
     }
 }
