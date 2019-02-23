@@ -1,4 +1,4 @@
-package com.fantasticsource.wardstones;
+package com.fantasticsource.wardstones.data;
 
 import com.fantasticsource.mctools.MCTools;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
