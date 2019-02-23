@@ -1,11 +1,17 @@
 package com.fantasticsource.wardstones.block;
 
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ITickable;
 
-public class TileWardstone extends TileEntity
+public class TileWardstone extends TileEntity implements ITickable
 {
     public TileWardstone()
     {
-        System.out.println(world + ", " + pos);
+    }
+
+    @Override
+    public void update()
+    {
+        //TODO use or remove ITickable implementation
     }
 }
