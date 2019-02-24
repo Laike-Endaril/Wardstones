@@ -54,11 +54,8 @@ public class WardstoneManager
     static void save(WardstoneData data) throws Exception
     {
         File file = new File(dir + data.id + ".dat");
-        if (!file.exists())
-        {
-            System.out.println(file.toString());
-            if (!file.createNewFile()) throw new Exception("Could not create file: " + file.toString());
-        }
+        if (!file.exists() && !file.createNewFile()) throw new Exception("Could not create file: " + file.toString());
+
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         writer.write(data.owner == null ? "null\r\n" : data.owner.toString() + "\r\n");
         writer.write(data.pos.getX() + "\r\n");
@@ -96,21 +93,27 @@ public class WardstoneManager
         save(data);
     }
 
-    static void add(UUID id, World world, BlockPos pos, String name, int group, UUID owner, boolean global, boolean corrupted, UUID... activatedBy)
+    public static void remove(World world, BlockPos pos) throws Exception
     {
-        WardstoneData data = new WardstoneData(id, world, pos, name, group, owner);
-    }
-
-    static void remove(WardstoneData data)
-    {
-        wardstones.remove(data);
-
-        if (data.corrupted) corruptedWardstones.remove(data);
-        else if (data.global) globalWardstones.remove(data);
-        else
+        System.out.println(world.isRemote);
+        WardstoneData fake = new WardstoneData(world, pos);
+        int index = wardstones.indexOf(fake);
+        if (index >= 0)
         {
-            clearActivators(data);
-            nonGlobalWardstones.remove(data);
+            WardstoneData data = wardstones.get(index);
+
+            wardstones.remove(index);
+
+            if (data.corrupted) corruptedWardstones.remove(data);
+            else if (data.global) globalWardstones.remove(data);
+            else
+            {
+                clearActivators(data);
+                nonGlobalWardstones.remove(data);
+            }
+
+            File file = new File(dir + data.id + ".dat");
+            if (file.exists() && !file.delete()) throw new Exception("Could not delete file: " + file.toString());
         }
     }
 

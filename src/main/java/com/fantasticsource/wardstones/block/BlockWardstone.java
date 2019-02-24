@@ -47,13 +47,16 @@ public class BlockWardstone extends BlockWardstoneBase
     {
         super.onBlockAdded(worldIn, pos, state);
 
-        try
+        if (!worldIn.isRemote)
         {
-            WardstoneManager.add(new WardstoneData(UUID.randomUUID(), worldIn, pos, "TODO", 0, null));
-        }
-        catch (Exception e)
-        {
-            MCTools.crash(e, 300, true);
+            try
+            {
+                WardstoneManager.add(new WardstoneData(UUID.randomUUID(), worldIn, pos, "TODO", 0, null));
+            }
+            catch (Exception e)
+            {
+                MCTools.crash(e, 300, true);
+            }
         }
     }
 
@@ -62,14 +65,24 @@ public class BlockWardstone extends BlockWardstoneBase
     {
         super.breakBlock(worldIn, pos, state);
 
-        pos = pos.down();
-        state = worldIn.getBlockState(pos);
+        BlockPos down = pos.down();
+        state = worldIn.getBlockState(down);
         if (state.getBlock() == BlocksAndItems.blockWardstoneBase)
         {
-            BlocksAndItems.blockWardstoneBase.breakBlock(worldIn, pos, state);
-            worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
+            BlocksAndItems.blockWardstoneBase.breakBlock(worldIn, down, state);
+            worldIn.setBlockState(down, Blocks.AIR.getDefaultState());
         }
 
-        //TODO remove data
+        if (!worldIn.isRemote)
+        {
+            try
+            {
+                WardstoneManager.remove(worldIn, pos);
+            }
+            catch (Exception e)
+            {
+                MCTools.crash(e, 301, false);
+            }
+        }
     }
 }

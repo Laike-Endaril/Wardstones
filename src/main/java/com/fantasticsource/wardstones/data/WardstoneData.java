@@ -23,6 +23,16 @@ public class WardstoneData
     ArrayList<UUID> activatedBy = new ArrayList<>();
 
 
+    /**
+     * This constructor is to be used for COMPARISONS ONLY
+     * Namely to find an actual wardstone based on position
+     */
+    WardstoneData(World world, BlockPos pos)
+    {
+        this.world = world;
+        this.pos = pos;
+    }
+
     public WardstoneData(UUID id, World world, BlockPos pos, String name, int group, UUID owner)
     {
         this.id = id;
