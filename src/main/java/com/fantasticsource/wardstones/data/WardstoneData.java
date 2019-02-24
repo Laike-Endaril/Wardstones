@@ -6,11 +6,11 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static com.fantasticsource.wardstones.data.WardstoneData.COMPARE_MODE.DATA;
+import static com.fantasticsource.wardstones.data.WardstoneData.COMPARE_MODE.POS;
 
 public class WardstoneData
 {
-    static COMPARE_MODE compareMode = DATA;
+    static COMPARE_MODE compareMode = POS;
 
     UUID id, owner;
     World world;
@@ -41,7 +41,7 @@ public class WardstoneData
         WardstoneData other = (WardstoneData) obj;
         switch (compareMode)
         {
-            case DATA:
+            case ID:
                 return id.equals(other.id);
             case POS:
                 return world.equals(other.world) && pos.equals(other.pos);
@@ -55,13 +55,14 @@ public class WardstoneData
     @Override
     public String toString()
     {
-        String str = id + "\r\n" + owner + "\r\n" + pos + "\r\n" + name + "\r\n" + group + "\r\n" + global + "\r\n" + corrupted + "\r\n";
+        String str = "ID:     \t" + id + "\r\nOwner:  \t" + owner + "\r\nPos:    \t" + pos + "\r\nName:   \t" + name + "\r\nGroup:  \t" + group + "\r\nGlobal: \t" + global + "\r\nCorrupt:\t" + corrupted + "\r\nActivated By...\r\n\r\n";
+        if (activatedBy.size() == 0) str += "(nobody)\r\n";
         for (UUID id : activatedBy) str += id + "\r\n";
         return str;
     }
 
     public enum COMPARE_MODE
     {
-        DATA, POS, OWNER
+        ID, POS, OWNER
     }
 }
