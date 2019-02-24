@@ -5,15 +5,10 @@ import net.minecraft.util.math.BlockPos;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static com.fantasticsource.wardstones.data.WardstoneData.COMPARE_MODE.*;
+import static com.fantasticsource.wardstones.data.WardstoneData.COMPARE_MODE.DATA;
 
 public class WardstoneData
 {
-    public enum COMPARE_MODE
-    {
-        DATA, POS, OWNER
-    }
-
     static COMPARE_MODE compareMode = DATA;
 
     UUID id, owner;
@@ -24,6 +19,7 @@ public class WardstoneData
     boolean global;
     boolean corrupted;
     ArrayList<UUID> activatedBy = new ArrayList<>();
+
 
     public WardstoneData(UUID id, BlockPos pos, String name, int group, UUID owner)
     {
@@ -57,5 +53,10 @@ public class WardstoneData
         String str = id + "\r\n" + owner + "\r\n" + pos + "\r\n" + name + "\r\n" + group + "\r\n" + global + "\r\n" + corrupted + "\r\n";
         for (UUID id : activatedBy) str += id + "\r\n";
         return str;
+    }
+
+    public enum COMPARE_MODE
+    {
+        DATA, POS, OWNER
     }
 }
