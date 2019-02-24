@@ -18,14 +18,6 @@ public class TileWardstone extends TileEntity implements ITickable
     }
 
     @Override
-    public void onChunkUnload()
-    {
-        super.onChunkUnload();
-
-        //TODO save data
-    }
-
-    @Override
     public void onLoad()
     {
         super.onLoad();
