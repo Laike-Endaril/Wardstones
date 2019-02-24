@@ -8,6 +8,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.UUID;
 
@@ -16,7 +17,7 @@ public class WardstoneManager
     private static String dir = null;
 
     private static boolean ready = false;
-    private static ArrayList<Pair<WardstoneData, Integer>> waiting = new ArrayList<>();
+    private static ArrayList<Pair<WardstoneData, Object[]>> waiting = new ArrayList<>();
 
     private static ArrayList<WardstoneData> wardstones = new ArrayList<>();
     private static ArrayList<WardstoneData> corruptedWardstones = new ArrayList<>();
@@ -33,10 +34,10 @@ public class WardstoneManager
         loadAll();
 
         ready = true;
-        for (Pair<WardstoneData, Integer> pair : waiting)
+        for (Pair<WardstoneData, Object[]> pair : waiting)
         {
             WardstoneData data = pair.getKey();
-            switch (pair.getValue())
+            switch ((int) pair.getValue()[0])
             {
                 case 0:
                     add(data);
@@ -58,6 +59,12 @@ public class WardstoneManager
                     break;
                 case 6:
                     purify(data);
+                    break;
+                case 7:
+                    addActivators(data, (UUID[]) pair.getValue()[1]);
+                    break;
+                case 8:
+                    removeActivators(data, (UUID[]) pair.getValue()[1]);
                     break;
             }
         }
@@ -166,7 +173,7 @@ public class WardstoneManager
     {
         if (!ready)
         {
-            waiting.add(new Pair<>(data, 0));
+            waiting.add(new Pair<>(data, new Object[]{0}));
             return;
         }
 
@@ -222,7 +229,7 @@ public class WardstoneManager
         WardstoneData fake = new WardstoneData(world.provider.getDimension(), pos);
         if (!ready)
         {
-            waiting.add(new Pair<>(fake, 1));
+            waiting.add(new Pair<>(fake, new Object[]{1}));
             return;
         }
 
@@ -233,7 +240,7 @@ public class WardstoneManager
     {
         if (!ready)
         {
-            waiting.add(new Pair<>(data, 2));
+            waiting.add(new Pair<>(data, new Object[]{2}));
             return;
         }
 
@@ -252,7 +259,7 @@ public class WardstoneManager
     {
         if (!ready)
         {
-            waiting.add(new Pair<>(data, 3));
+            waiting.add(new Pair<>(data, new Object[]{3}));
             return;
         }
 
@@ -274,7 +281,7 @@ public class WardstoneManager
     {
         if (!ready)
         {
-            waiting.add(new Pair<>(data, 4));
+            waiting.add(new Pair<>(data, new Object[]{4}));
             return;
         }
 
@@ -295,7 +302,7 @@ public class WardstoneManager
     {
         if (!ready)
         {
-            waiting.add(new Pair<>(data, 5));
+            waiting.add(new Pair<>(data, new Object[]{5}));
             return;
         }
 
@@ -318,7 +325,7 @@ public class WardstoneManager
     {
         if (!ready)
         {
-            waiting.add(new Pair<>(data, 6));
+            waiting.add(new Pair<>(data, new Object[]{6}));
             return;
         }
 
@@ -329,6 +336,50 @@ public class WardstoneManager
         else nonGlobalWardstones.add(data);
 
         data.corrupted = false;
+
+        save(data);
+    }
+
+    public static void addActivators(WardstoneData data, UUID... activators)
+    {
+        if (activators.length == 0) return;
+        if (!ready)
+        {
+            waiting.add(new Pair<>(data, new Object[]{7, activators.clone()}));
+            return;
+        }
+
+        if (data.corrupted || data.global) return;
+
+        for (UUID id : data.activatedBy)
+        {
+            activatedWardstones.computeIfAbsent(id, k -> new ArrayList<>()).add(data);
+        }
+
+        data.activatedBy.addAll(Arrays.asList(activators));
+
+        save(data);
+    }
+
+    public static void removeActivators(WardstoneData data, UUID... activators)
+    {
+        if (activators.length == 0) return;
+        if (!ready)
+        {
+            waiting.add(new Pair<>(data, new Object[]{8, activators.clone()}));
+            return;
+        }
+
+        if (data.corrupted || data.global) return;
+
+        ArrayList<WardstoneData> set;
+        for (UUID id : data.activatedBy)
+        {
+            set = activatedWardstones.get(id);
+            if (set != null) set.remove(data);
+        }
+
+        data.activatedBy.removeAll(Arrays.asList(activators));
 
         save(data);
     }
