@@ -4,7 +4,7 @@ import com.fantasticsource.mctools.MCTools;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -21,21 +21,45 @@ public class WardstoneManager
     private static LinkedHashMap<UUID, ArrayList<WardstoneData>> activatedWardstones = new LinkedHashMap<>();
 
 
-    public static void init(FMLServerStartingEvent event)
+    public static void init(FMLServerStartingEvent event) throws Exception
     {
         dir = MCTools.getDataDir(event.getServer()) + "wardstones" + File.separator;
-        load();
+        loadAll();
     }
 
-    public static void save()
+    public static void saveAll() throws Exception
     {
+        BufferedWriter writer;
+        for (WardstoneData data : wardstones)
+        {
+            writer = new BufferedWriter(new FileWriter(dir + data.id + ".dat"));
+            writer.write(data.owner.toString() + "\r\n");
+            writer.write(data.pos.getX() + "\r\n");
+            writer.write(data.pos.getY() + "\r\n");
+            writer.write(data.pos.getZ() + "\r\n");
+            writer.write(data.name + "\r\n");
+            writer.write(data.group + "\r\n");
+            writer.write(data.global + "\r\n");
+            writer.write(data.corrupted + "\r\n");
+            for (UUID id : data.activatedBy)
+            {
+                writer.write(id.toString() + "\r\n");
+            }
+            writer.close();
+        }
     }
 
-    public static void load()
+    public static void loadAll() throws Exception
     {
-        File file = new File(dir + "corrupted.dat");
-        file = new File(dir + "globals.dat");
-        file = new File(dir + "nonglobals.dat");
+        BufferedReader reader;
+        File[] files = new File(dir).listFiles();
+        if (files != null)
+        {
+            for (File file : files)
+            {
+                //TODO wait until there are some saved files to double check values of first
+            }
+        }
     }
 
 

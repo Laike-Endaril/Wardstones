@@ -5,8 +5,17 @@ import net.minecraft.util.math.BlockPos;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import static com.fantasticsource.wardstones.data.WardstoneData.COMPARE_MODE.*;
+
 public class WardstoneData
 {
+    public enum COMPARE_MODE
+    {
+        DATA, POS, OWNER
+    }
+
+    static COMPARE_MODE compareMode = DATA;
+
     UUID id, owner;
     BlockPos pos;
     String name;
@@ -28,8 +37,18 @@ public class WardstoneData
     @Override
     public boolean equals(Object obj)
     {
-        if (!(obj instanceof WardstoneData)) return false;
-        return id.equals(((WardstoneData) obj).id);
+        switch (compareMode)
+        {
+            case DATA:
+                if (!(obj instanceof WardstoneData)) return false;
+                return id.equals(((WardstoneData) obj).id);
+            case POS:
+                return pos.equals(obj);
+            case OWNER:
+                return owner.equals(obj);
+        }
+
+        return false;
     }
 
     @Override

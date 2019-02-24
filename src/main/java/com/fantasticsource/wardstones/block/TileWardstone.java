@@ -1,12 +1,11 @@
 package com.fantasticsource.wardstones.block;
 
-import com.fantasticsource.wardstones.data.WardstoneData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 
 public class TileWardstone extends TileEntity implements ITickable
 {
-    WardstoneData data;
+    //TODO This should only be used for rendering purposes!  Not for data!
 
     public TileWardstone()
     {

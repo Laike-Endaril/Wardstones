@@ -19,7 +19,7 @@ public class Wardstones
     }
 
     @Mod.EventHandler
-    public static void onServerStart(FMLServerStartingEvent event)
+    public static void onServerStart(FMLServerStartingEvent event) throws Exception
     {
         WardstoneManager.init(event);
     }
