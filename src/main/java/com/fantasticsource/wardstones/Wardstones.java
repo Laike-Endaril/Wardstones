@@ -1,6 +1,6 @@
 package com.fantasticsource.wardstones;
 
-import com.fantasticsource.wardstones.data.WardstoneMap;
+import com.fantasticsource.wardstones.data.WardstoneManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
@@ -21,6 +21,6 @@ public class Wardstones
     @Mod.EventHandler
     public static void onServerStart(FMLServerStartingEvent event)
     {
-        WardstoneMap.init(event);
+        WardstoneManager.init(event);
     }
 }
