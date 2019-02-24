@@ -2,6 +2,7 @@ package com.fantasticsource.wardstones.data;
 
 import com.fantasticsource.mctools.MCTools;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
 import java.io.BufferedReader;
@@ -27,29 +28,14 @@ public class WardstoneManager
     public static void init(FMLServerStartingEvent event) throws Exception
     {
         dir = MCTools.getDataDir(event.getServer()) + "wardstones" + File.separator;
+        File file = new File(dir);
+        if ((!file.exists() || !file.isDirectory()) && file.mkdir()) System.out.println("Directory created: " + dir);
         loadAll();
     }
 
     public static void saveAll() throws Exception
     {
-        BufferedWriter writer;
-        for (WardstoneData data : wardstones)
-        {
-            writer = new BufferedWriter(new FileWriter(dir + data.id + ".dat"));
-            writer.write(data.owner.toString() + "\r\n");
-            writer.write(data.pos.getX() + "\r\n");
-            writer.write(data.pos.getY() + "\r\n");
-            writer.write(data.pos.getZ() + "\r\n");
-            writer.write(data.name + "\r\n");
-            writer.write(data.group + "\r\n");
-            writer.write(data.global + "\r\n");
-            writer.write(data.corrupted + "\r\n");
-            for (UUID id : data.activatedBy)
-            {
-                writer.write(id.toString() + "\r\n");
-            }
-            writer.close();
-        }
+        for (WardstoneData data : wardstones) save(data);
     }
 
     public static void loadAll() throws Exception
@@ -65,20 +51,54 @@ public class WardstoneManager
         }
     }
 
-
-    static void add(UUID id, BlockPos pos, String name, int group, UUID owner, boolean global, boolean corrupted, UUID... activatedBy)
+    static void save(WardstoneData data) throws Exception
     {
-        WardstoneData data = new WardstoneData(id, pos, name, group, owner);
-        if (wardstones.contains(data)) throw new IllegalArgumentException("Wardstone already exists!\r\n" + data.toString());
+        File file = new File(dir + data.id + ".dat");
+        if (!file.exists())
+        {
+            System.out.println(file.toString());
+            if (!file.createNewFile()) throw new Exception("Could not create file: " + file.toString());
+        }
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        writer.write(data.owner == null ? "null\r\n" : data.owner.toString() + "\r\n");
+        writer.write(data.pos.getX() + "\r\n");
+        writer.write(data.pos.getY() + "\r\n");
+        writer.write(data.pos.getZ() + "\r\n");
+        writer.write(data.name + "\r\n");
+        writer.write(data.group + "\r\n");
+        writer.write(data.global + "\r\n");
+        writer.write(data.corrupted + "\r\n");
+        for (UUID id : data.activatedBy)
+        {
+            writer.write(id.toString() + "\r\n");
+        }
+        writer.close();
+    }
+
+
+    public static void add(WardstoneData data) throws Exception
+    {
+        if (wardstones.contains(data)) throw new IllegalArgumentException("Wardstone already exists at this position!\r\n" + data.toString());
 
         wardstones.add(data);
-        if (corrupted) corrupt(data);
-        else if (global) setGlobal(data);
+        if (data.corrupted) corrupt(data);
+        else if (data.global) setGlobal(data);
         else
         {
             setNonGlobal(data);
-            addActivators(data, activatedBy);
+
+            for (UUID id : data.activatedBy)
+            {
+                activatedWardstones.computeIfAbsent(id, k -> new ArrayList<>()).add(data);
+            }
         }
+
+        save(data);
+    }
+
+    static void add(UUID id, World world, BlockPos pos, String name, int group, UUID owner, boolean global, boolean corrupted, UUID... activatedBy)
+    {
+        WardstoneData data = new WardstoneData(id, world, pos, name, group, owner);
     }
 
     static void remove(WardstoneData data)

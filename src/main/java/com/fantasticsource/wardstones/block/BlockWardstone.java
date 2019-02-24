@@ -1,6 +1,9 @@
 package com.fantasticsource.wardstones.block;
 
+import com.fantasticsource.mctools.MCTools;
 import com.fantasticsource.wardstones.BlocksAndItems;
+import com.fantasticsource.wardstones.data.WardstoneData;
+import com.fantasticsource.wardstones.data.WardstoneManager;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
@@ -8,6 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.UUID;
 
 public class BlockWardstone extends BlockWardstoneBase
 {
@@ -43,7 +47,14 @@ public class BlockWardstone extends BlockWardstoneBase
     {
         super.onBlockAdded(worldIn, pos, state);
 
-        //TODO init data
+        try
+        {
+            WardstoneManager.add(new WardstoneData(UUID.randomUUID(), worldIn, pos, "TODO", 0, null));
+        }
+        catch (Exception e)
+        {
+            MCTools.crash(e, 300, true);
+        }
     }
 
     @Override
