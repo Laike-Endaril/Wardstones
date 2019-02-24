@@ -20,9 +20,6 @@ public class WardstoneManager
     private static ArrayList<Pair<WardstoneData, Object[]>> waiting = new ArrayList<>();
 
     private static ArrayList<WardstoneData> wardstones = new ArrayList<>();
-    private static ArrayList<WardstoneData> corruptedWardstones = new ArrayList<>();
-    private static ArrayList<WardstoneData> globalWardstones = new ArrayList<>();
-    private static ArrayList<WardstoneData> nonGlobalWardstones = new ArrayList<>();
     private static LinkedHashMap<UUID, ArrayList<WardstoneData>> activatedWardstones = new LinkedHashMap<>();
 
 
@@ -72,6 +69,12 @@ public class WardstoneManager
                 case 10:
                     setUnFound(data);
                     break;
+                case 11:
+                    setGroup(data, (Integer) pair.getValue()[1]);
+                    break;
+                case 12:
+                    setOwner(data, (UUID) pair.getValue()[1]);
+                    break;
             }
         }
         waiting.clear();
@@ -85,9 +88,6 @@ public class WardstoneManager
         waiting = new ArrayList<>();
 
         wardstones = new ArrayList<>();
-        corruptedWardstones = new ArrayList<>();
-        globalWardstones = new ArrayList<>();
-        nonGlobalWardstones = new ArrayList<>();
         activatedWardstones = new LinkedHashMap<>();
     }
 
@@ -214,14 +214,6 @@ public class WardstoneManager
 
                 wardstones.remove(index);
 
-                if (data.corrupted) corruptedWardstones.remove(data);
-                else if (data.global) globalWardstones.remove(data);
-                else
-                {
-                    clearActivators(data);
-                    nonGlobalWardstones.remove(data);
-                }
-
                 File file = new File(dir + data.id + ".dat");
                 if (file.exists() && !file.delete()) throw new Exception("Could not delete file: " + file.toString());
             }
@@ -276,13 +268,11 @@ public class WardstoneManager
         if (!data.global)
         {
             clearActivators(data);
-            nonGlobalWardstones.remove(data);
-            globalWardstones.add(data);
 
             data.global = true;
-        }
 
-        save(data);
+            save(data);
+        }
     }
 
     static void setNonGlobal(WardstoneData data)
@@ -297,13 +287,10 @@ public class WardstoneManager
 
         if (data.global)
         {
-            globalWardstones.remove(data);
-            nonGlobalWardstones.add(data);
-
             data.global = false;
-        }
 
-        save(data);
+            save(data);
+        }
     }
 
     static void corrupt(WardstoneData data)
@@ -314,19 +301,15 @@ public class WardstoneManager
             return;
         }
 
-        if (data.corrupted) return;
-
-        if (data.global) globalWardstones.remove(data);
-        else
+        if (!data.corrupted)
         {
-            clearActivators(data);
-            nonGlobalWardstones.remove(data);
+            if (data.global) data.global = false;
+            else clearActivators(data);
+
+            data.corrupted = true;
+
+            save(data);
         }
-        corruptedWardstones.add(data);
-
-        data.corrupted = true;
-
-        save(data);
     }
 
     static void purify(WardstoneData data)
@@ -337,15 +320,12 @@ public class WardstoneManager
             return;
         }
 
-        if (!data.corrupted) return;
+        if (data.corrupted)
+        {
+            data.corrupted = false;
 
-        corruptedWardstones.remove(data);
-        if (data.global) globalWardstones.add(data);
-        else nonGlobalWardstones.add(data);
-
-        data.corrupted = false;
-
-        save(data);
+            save(data);
+        }
     }
 
     public static void addActivators(WardstoneData data, UUID... activators)
@@ -356,7 +336,6 @@ public class WardstoneManager
             waiting.add(new Pair<>(data, new Object[]{7, activators.clone()}));
             return;
         }
-
         if (data.corrupted || data.global) return;
 
         for (UUID id : data.activatedBy)
@@ -377,7 +356,6 @@ public class WardstoneManager
             waiting.add(new Pair<>(data, new Object[]{8, activators.clone()}));
             return;
         }
-
         if (data.corrupted || data.global) return;
 
         ArrayList<WardstoneData> set;
@@ -390,12 +368,6 @@ public class WardstoneManager
         data.activatedBy.removeAll(Arrays.asList(activators));
 
         save(data);
-    }
-
-    public static WardstoneData get(World world, BlockPos pos)
-    {
-        int index = wardstones.indexOf(new WardstoneData(world.provider.getDimension(), pos));
-        return index < 0 ? null : wardstones.get(index);
     }
 
     public static void setFound(WardstoneData data)
@@ -422,5 +394,38 @@ public class WardstoneManager
         data.found = false;
 
         save(data);
+    }
+
+    public static void setGroup(WardstoneData data, int group)
+    {
+        if (!ready)
+        {
+            waiting.add(new Pair<>(data, new Object[]{11, group}));
+            return;
+        }
+
+        data.group = group;
+
+        save(data);
+    }
+
+    public static void setOwner(WardstoneData data, UUID owner)
+    {
+        if (!ready)
+        {
+            waiting.add(new Pair<>(data, new Object[]{12, owner}));
+            return;
+        }
+
+        data.owner = owner;
+
+        save(data);
+    }
+
+
+    public static WardstoneData get(World world, BlockPos pos)
+    {
+        int index = wardstones.indexOf(new WardstoneData(world.provider.getDimension(), pos));
+        return index < 0 ? null : wardstones.get(index);
     }
 }
