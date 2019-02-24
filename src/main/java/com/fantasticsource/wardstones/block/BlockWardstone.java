@@ -17,6 +17,7 @@ public class BlockWardstone extends BlockWardstoneBase
         setRegistryName("wardstone");
     }
 
+
     @Override
     public boolean hasTileEntity(IBlockState state)
     {
@@ -36,6 +37,15 @@ public class BlockWardstone extends BlockWardstoneBase
         return super.canPlaceBlockAt(worldIn, pos) && super.canPlaceBlockAt(worldIn, pos.up());
     }
 
+
+    @Override
+    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
+    {
+        super.onBlockAdded(worldIn, pos, state);
+
+        //TODO init data
+    }
+
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
     {
@@ -48,5 +58,7 @@ public class BlockWardstone extends BlockWardstoneBase
             BlocksAndItems.blockWardstoneBase.breakBlock(worldIn, pos, state);
             worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
         }
+
+        //TODO remove data
     }
 }
