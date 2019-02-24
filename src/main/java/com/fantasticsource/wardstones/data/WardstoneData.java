@@ -17,8 +17,9 @@ public class WardstoneData
     String name;
     int group;
 
-    boolean global;
     boolean corrupted;
+    boolean global;
+    boolean found;
     ArrayList<UUID> activatedBy = new ArrayList<>();
 
 
@@ -42,7 +43,7 @@ public class WardstoneData
         this.owner = owner;
     }
 
-    public WardstoneData(UUID id, int dimension, BlockPos pos, String name, int group, UUID owner, boolean global, boolean corrupted, ArrayList<UUID> activatedBy)
+    public WardstoneData(UUID id, int dimension, BlockPos pos, String name, int group, UUID owner, boolean global, boolean corrupted, boolean found, ArrayList<UUID> activatedBy)
     {
         this.id = id;
         this.dimension = dimension;
@@ -50,8 +51,9 @@ public class WardstoneData
         this.name = name;
         this.group = group;
         this.owner = owner;
-        this.global = global;
         this.corrupted = corrupted;
+        this.global = global;
+        this.found = found;
         this.activatedBy = activatedBy;
     }
 
@@ -81,6 +83,31 @@ public class WardstoneData
         if (activatedBy.size() == 0) str += "(nobody)\r\n";
         for (UUID id : activatedBy) str += id + "\r\n";
         return str;
+    }
+
+    public boolean isCorrupted()
+    {
+        return corrupted;
+    }
+
+    public boolean isGlobal()
+    {
+        return global;
+    }
+
+    public boolean isFound()
+    {
+        return found;
+    }
+
+    public UUID getOwner()
+    {
+        return owner;
+    }
+
+    public boolean isActivatedFor(UUID id)
+    {
+        return activatedBy.contains(id);
     }
 
     public enum COMPARE_MODE

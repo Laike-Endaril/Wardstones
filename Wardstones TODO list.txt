@@ -1,0 +1,19 @@
+Add data and methods for subtype (int)...
+...crafted
+...surface
+...sky
+...underground
+...village
+...stronghold
+...nether fortress
+...end city
+...ocean monument
+...jungle temple
+...desert pyramid
+...mineshaft
+...dungeon
+...mooshroom
+...mansion
+...witch hut
+...igloo
+...draconic

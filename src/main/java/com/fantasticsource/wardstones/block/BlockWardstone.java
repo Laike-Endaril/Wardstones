@@ -5,7 +5,10 @@ import com.fantasticsource.wardstones.BlocksAndItems;
 import com.fantasticsource.wardstones.data.WardstoneData;
 import com.fantasticsource.wardstones.data.WardstoneManager;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -69,5 +72,81 @@ public class BlockWardstone extends BlockWardstoneBase
                 MCTools.crash(e, 301, false);
             }
         }
+    }
+
+    @Override
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    {
+        try
+        {
+            WardstoneData data = WardstoneManager.get(worldIn, pos);
+            if (data == null) throw new Exception(playerIn.getName() + " interacted with errored wardstone!\r\nDimension: " + worldIn.provider.getDimension() + "\r\nPos: " + pos + "\r\n");
+
+            if (data.isCorrupted())
+            {
+                //Corrupted
+                //TODO teleport player randomly
+            }
+            else if (data.isGlobal())
+            {
+                //Global
+                if (!data.isFound())
+                {
+                    WardstoneManager.setFound(data);
+                    //TODO set global owner if enabled in config
+                    //TODO global waypoint
+                }
+                else
+                {
+                    if (playerIn.isSneaking())
+                    {
+                        if (playerIn.getGameProfile().getId().equals(data.getOwner()))
+                        {
+                            //TODO global edit menu
+                        }
+                    }
+                    else
+                    {
+                        //TODO global teleport menu
+                    }
+                }
+            }
+            else
+            {
+                //Non-global
+                if (!data.isFound())
+                {
+                    WardstoneManager.setFound(data);
+                    //TODO set non-global owner if enabled in config
+                }
+
+                if (!data.isActivatedFor(playerIn.getGameProfile().getId()))
+                {
+                    WardstoneManager.addActivators(data, playerIn.getGameProfile().getId());
+                    //TODO non-global waypoint
+                }
+                else
+                {
+                    if (playerIn.isSneaking())
+                    {
+                        if (playerIn.getGameProfile().getId().equals(data.getOwner()))
+                        {
+                            //TODO non-global edit menu
+                        }
+                    }
+                    else
+                    {
+                        //TODO non-global teleport menu
+                    }
+                }
+            }
+            return true;
+        }
+        catch (Exception e)
+        {
+            MCTools.crash(e, 305, false);
+        }
+
+        return false;
     }
 }

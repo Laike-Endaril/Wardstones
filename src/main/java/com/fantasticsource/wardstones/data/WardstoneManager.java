@@ -66,6 +66,12 @@ public class WardstoneManager
                 case 8:
                     removeActivators(data, (UUID[]) pair.getValue()[1]);
                     break;
+                case 9:
+                    setFound(data);
+                    break;
+                case 10:
+                    setUnFound(data);
+                    break;
             }
         }
         waiting.clear();
@@ -116,8 +122,9 @@ public class WardstoneManager
                 int group = Integer.parseInt(reader.readLine().trim());
                 String line = reader.readLine().trim();
                 UUID owner = line.equals("null") ? null : UUID.fromString(line);
-                boolean global = Boolean.parseBoolean(reader.readLine().trim());
                 boolean corrupted = Boolean.parseBoolean(reader.readLine().trim());
+                boolean global = Boolean.parseBoolean(reader.readLine().trim());
+                boolean found = Boolean.parseBoolean(reader.readLine().trim());
 
                 ArrayList<UUID> activatedBy = new ArrayList<>();
                 line = reader.readLine().trim();
@@ -129,7 +136,7 @@ public class WardstoneManager
 
                 reader.close();
 
-                add(new WardstoneData(id, dimension, new BlockPos(x, y, z), name, group, owner, global, corrupted, activatedBy));
+                add(new WardstoneData(id, dimension, new BlockPos(x, y, z), name, group, owner, corrupted, global, found, activatedBy));
             }
         }
         catch (Exception e)
@@ -154,8 +161,9 @@ public class WardstoneManager
             writer.write(data.name + "\r\n");
             writer.write(data.group + "\r\n");
             writer.write(data.owner == null ? "null\r\n" : data.owner.toString() + "\r\n");
-            writer.write(data.global + "\r\n");
             writer.write(data.corrupted + "\r\n");
+            writer.write(data.global + "\r\n");
+            writer.write(data.found + "\r\n");
             for (UUID id : data.activatedBy)
             {
                 writer.write(id.toString() + "\r\n");
@@ -380,6 +388,38 @@ public class WardstoneManager
         }
 
         data.activatedBy.removeAll(Arrays.asList(activators));
+
+        save(data);
+    }
+
+    public static WardstoneData get(World world, BlockPos pos)
+    {
+        int index = wardstones.indexOf(new WardstoneData(world.provider.getDimension(), pos));
+        return index < 0 ? null : wardstones.get(index);
+    }
+
+    public static void setFound(WardstoneData data)
+    {
+        if (!ready)
+        {
+            waiting.add(new Pair<>(data, new Object[]{9}));
+            return;
+        }
+
+        data.found = true;
+
+        save(data);
+    }
+
+    public static void setUnFound(WardstoneData data)
+    {
+        if (!ready)
+        {
+            waiting.add(new Pair<>(data, new Object[]{10}));
+            return;
+        }
+
+        data.found = false;
 
         save(data);
     }
