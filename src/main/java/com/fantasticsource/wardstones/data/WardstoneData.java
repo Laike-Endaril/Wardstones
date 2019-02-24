@@ -1,7 +1,6 @@
 package com.fantasticsource.wardstones.data;
 
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -13,7 +12,7 @@ public class WardstoneData
     static COMPARE_MODE compareMode = POS;
 
     UUID id, owner;
-    World world;
+    int dimension;
     BlockPos pos;
     String name;
     int group;
@@ -27,20 +26,33 @@ public class WardstoneData
      * This constructor is to be used for COMPARISONS ONLY
      * Namely to find an actual wardstone based on position
      */
-    WardstoneData(World world, BlockPos pos)
+    WardstoneData(int dimension, BlockPos pos)
     {
-        this.world = world;
+        this.dimension = dimension;
         this.pos = pos;
     }
 
-    public WardstoneData(UUID id, World world, BlockPos pos, String name, int group, UUID owner)
+    public WardstoneData(UUID id, int dimension, BlockPos pos, String name, int group, UUID owner)
     {
         this.id = id;
-        this.world = world;
+        this.dimension = dimension;
         this.pos = pos;
         this.name = name;
         this.group = group;
         this.owner = owner;
+    }
+
+    public WardstoneData(UUID id, int dimension, BlockPos pos, String name, int group, UUID owner, boolean global, boolean corrupted, ArrayList<UUID> activatedBy)
+    {
+        this.id = id;
+        this.dimension = dimension;
+        this.pos = pos;
+        this.name = name;
+        this.group = group;
+        this.owner = owner;
+        this.global = global;
+        this.corrupted = corrupted;
+        this.activatedBy = activatedBy;
     }
 
     @Override
@@ -54,7 +66,7 @@ public class WardstoneData
             case ID:
                 return id.equals(other.id);
             case POS:
-                return world.equals(other.world) && pos.equals(other.pos);
+                return dimension == other.dimension && pos.equals(other.pos);
             case OWNER:
                 return owner.equals(other.owner);
         }

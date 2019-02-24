@@ -4,6 +4,7 @@ import com.fantasticsource.wardstones.data.WardstoneManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
 
 @Mod(modid = Wardstones.MODID, name = Wardstones.NAME, version = Wardstones.VERSION, dependencies = "required-after:fantasticlib@[1.12.2.001,)")
 public class Wardstones
@@ -19,8 +20,14 @@ public class Wardstones
     }
 
     @Mod.EventHandler
-    public static void onServerStart(FMLServerStartingEvent event) throws Exception
+    public static void onServerStart(FMLServerStartingEvent event)
     {
         WardstoneManager.init(event);
+    }
+
+    @Mod.EventHandler
+    public static void onServerClose(FMLServerStoppedEvent event)
+    {
+        WardstoneManager.reset();
     }
 }
