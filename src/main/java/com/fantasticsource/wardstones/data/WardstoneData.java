@@ -1,6 +1,7 @@
 package com.fantasticsource.wardstones.data;
 
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -12,6 +13,7 @@ public class WardstoneData
     static COMPARE_MODE compareMode = DATA;
 
     UUID id, owner;
+    World world;
     BlockPos pos;
     String name;
     int group;
@@ -21,9 +23,10 @@ public class WardstoneData
     ArrayList<UUID> activatedBy = new ArrayList<>();
 
 
-    public WardstoneData(UUID id, BlockPos pos, String name, int group, UUID owner)
+    public WardstoneData(UUID id, World world, BlockPos pos, String name, int group, UUID owner)
     {
         this.id = id;
+        this.world = world;
         this.pos = pos;
         this.name = name;
         this.group = group;
@@ -33,15 +36,17 @@ public class WardstoneData
     @Override
     public boolean equals(Object obj)
     {
+        if (!(obj instanceof WardstoneData)) return false;
+
+        WardstoneData other = (WardstoneData) obj;
         switch (compareMode)
         {
             case DATA:
-                if (!(obj instanceof WardstoneData)) return false;
-                return id.equals(((WardstoneData) obj).id);
+                return id.equals(other.id);
             case POS:
-                return pos.equals(obj);
+                return world.equals(other.world) && pos.equals(other.pos);
             case OWNER:
-                return owner.equals(obj);
+                return owner.equals(other.owner);
         }
 
         return false;
