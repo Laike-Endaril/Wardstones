@@ -17,3 +17,5 @@ Add data and methods for subtype (int)...
 ...witch hut
 ...igloo
 ...draconic
+
+Add option to prevent teleporting within an area, and bypass for it
