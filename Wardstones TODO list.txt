@@ -18,4 +18,20 @@ Add data and methods for subtype (int)...
 ...igloo
 ...draconic
 
-Add option to prevent teleporting within an area, and bypass for it
+Add per-type option for non-owner teleport mode and for owner teleport mode
+0: normal
+1: cannot teleport into
+2: cannot teleport out of
+3: cannot teleport into or out of (but can teleport while inside)
+4: cannot teleport into, out of, or while inside
+
+Add per-type option for ai pathing prevention range
+
+Add per-type option for entity removal mode and range
+0: none
+1: banish (delete)
+2: push outwards
+3: kill
+4: teleport outside, face away from center, and reset ai (make sure not to teleport into another protected zone, and to match block type, eg. if it was in water, put it in water, if possible)
+
+Does protection method work for fire?
