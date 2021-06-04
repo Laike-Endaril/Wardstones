@@ -23,7 +23,6 @@ public class BlockWardstoneBase extends Block
         setResistance(Float.MAX_VALUE);
         setUnlocalizedName(Wardstones.MODID + ":wardstone");
         setSoundType(SoundType.STONE);
-        disableStats();
         setCreativeTab(BlocksAndItems.creativeTab);
 
         if (this.getClass() == BlockWardstoneBase.class) setRegistryName("wardstonebase");
